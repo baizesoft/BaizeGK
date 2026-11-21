@@ -1,4 +1,4 @@
-# 公考大鹏 (GongKaoDaPeng)
+# 白泽公考 (BaizeGK)
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 
@@ -18,7 +18,7 @@
 ## 目录结构
 
 ```
-GongKaoDaPeng/
+BaizeGK/
 ├── backend/              # FastAPI 后端
 │   ├── app/
 │   │   ├── main.py       # 应用入口（lifespan + CORS + 路由）

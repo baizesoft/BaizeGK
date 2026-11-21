@@ -14,9 +14,9 @@ def get_home() -> HomeResponse:
     """返回首页展示所需的全部数据，前端纯展示、不写死文案。"""
     app_cfg = config.get("app", {})
     return HomeResponse(
-        app_name=app_cfg.get("name", "公考大鹏"),
+        app_name=app_cfg.get("name", "白泽公考"),
         version=app_cfg.get("version", "0.1.0"),
-        title="公考大鹏",
+        title="白泽公考",
         subtitle="程序员公考 · 用工程能力降维打击",
         slogan="别人用笔和脑子磨，我们用代码把学习与面试效率拉满。",
         features=[

@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 app_cfg = config.get("app", {})
 
 app = FastAPI(
-    title=app_cfg.get("name", "公考大鹏"),
+    title=app_cfg.get("name", "白泽公考"),
     version=app_cfg.get("version", "0.1.0"),
     lifespan=lifespan,
 )
@@ -49,4 +49,4 @@ app.include_router(materials.router)
 
 @app.get("/")
 def root() -> dict:
-    return {"msg": "公考大鹏 API 已启动", "docs": "/docs", "home": "/api/home"}
+    return {"msg": "白泽公考 API 已启动", "docs": "/docs", "home": "/api/home"}

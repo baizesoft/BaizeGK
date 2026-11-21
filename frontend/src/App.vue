@@ -17,9 +17,9 @@ const navItems = [
   <div class="app">
     <header class="topbar">
       <div class="topbar-inner">
-        <RouterLink to="/" class="brand" aria-label="公考大鹏首页">
+        <RouterLink to="/" class="brand" aria-label="白泽公考首页">
           <Bird :size="22" />
-          <span>公考大鹏</span>
+          <span>白泽公考</span>
         </RouterLink>
         <nav class="nav">
           <RouterLink
@@ -41,7 +41,7 @@ const navItems = [
     </main>
 
     <footer class="foot">
-      <span>公考大鹏 · 程序员公考提效平台</span>
+      <span>白泽公考 · 程序员公考提效平台</span>
       <span>FastAPI + Vue + SQLModel</span>
     </footer>
   </div>
