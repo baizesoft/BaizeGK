@@ -1,10 +1,14 @@
 """SQLModel 数据模型（题库 + 答题记录 + 用户）。"""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlmodel import Field, SQLModel, UniqueConstraint
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class User(SQLModel, table=True):
@@ -13,7 +17,7 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True)
     nickname: str = ""
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=utc_now)
 
 
 class Question(SQLModel, table=True):
@@ -37,7 +41,7 @@ class Question(SQLModel, table=True):
     difficulty: str = ""                      # easy / medium / hard
     source: str = ""                          # 来源：卷次 + 题号 + 页码（去重键之一）
     is_real: bool = Field(default=True, index=True)  # 是否真题（true=真题，false=模拟题）
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=utc_now)
 
     # 去重键：同一份真题（科目 + 模块 + 来源 + 题干）只应留一条。
     # 这里尽量在表定义层面加上唯一约束，让新建表自带唯一性；
@@ -60,4 +64,4 @@ class QuestionAttempt(SQLModel, table=True):
     is_correct: Optional[bool] = None          # 客观题由代码判分；主观题暂留空，后续接入判分
     time_sec: int = 0                         # 单题用时（秒）
     error_tag: str = ""                        # 错因三桶：读题错 / 知识点错 / 计算错
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=utc_now)

@@ -4,3 +4,6 @@ sqlmodel>=0.0.16
 loguru>=0.7
 pyyaml>=6.0
 pypdf>=4.0
+openpyxl>=3.1,<4
+defusedxml>=0.7,<1
+xlrd>=2.0,<3

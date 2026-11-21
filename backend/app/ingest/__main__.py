@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 from app.config import config
-from app.ingest.pipeline import format_report, run
+from app.ingest.pipeline import IncompleteRebuildError, format_report, run
 
 
 def _resolve_seed(args_seed: str | None) -> Path | None:
@@ -30,7 +30,7 @@ def _resolve_seed(args_seed: str | None) -> Path | None:
 def main() -> None:
     p = argparse.ArgumentParser(description="把真题资料目录灌入题库（幂等，可重建）")
     p.add_argument("--seed", default=None, help="真题种子目录（PDF/JSON 所在目录）")
-    p.add_argument("--rebuild", action="store_true", help="先清空全部真题再全量重建")
+    p.add_argument("--rebuild", action="store_true", help="校验资料覆盖全部已有真题，再补齐新题（不清空题库）")
     p.add_argument("--no-cache", action="store_true", help="不使用解析缓存，强制重新解析")
     args = p.parse_args()
 
@@ -46,7 +46,10 @@ def main() -> None:
         print(f"错误：种子目录不存在：{seed}")
         sys.exit(1)
 
-    report = run(seed, rebuild=args.rebuild, use_cache=not args.no_cache)
+    try:
+        report = run(seed, rebuild=args.rebuild, use_cache=not args.no_cache)
+    except IncompleteRebuildError as exc:
+        p.exit(1, f"错误：{exc}\n")
     print(format_report(report))
 
 

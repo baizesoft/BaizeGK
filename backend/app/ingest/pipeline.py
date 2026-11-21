@@ -4,8 +4,8 @@
 - 种子目录（资料）是只读输入，解析缓存落在项目内的 backend/.cache/parsed，
   绝不回写资料目录；
 - 去重靠（subject, module, source, content）唯一键，权威手段是 CREATE UNIQUE INDEX；
-- run() 幂等：重复运行不会翻倍；rebuild=True 时先清空真题行，再全量重建，
-  从而保证「只要资料目录还在，就能从零重建真题库」。
+- run() 幂等：重复运行不会翻倍；rebuild=True 时校验资料完整覆盖已入库真题，
+  再补充新题，已有题目及答题记录不删不换号。
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import json
 import re
 from pathlib import Path
 
-from sqlmodel import Session, delete, func, select, text
+from sqlmodel import Session, func, select, text
 
 from app.database import engine
 from app.ingest.classify import classify, subject_of
@@ -103,21 +103,16 @@ def _normalize_row(raw: dict) -> dict:
     return row
 
 
-def run(seed_dir: Path, rebuild: bool = False, use_cache: bool = True) -> dict:
-    """执行一次入库，返回覆盖率报告字典。
+class IncompleteRebuildError(ValueError):
+    """资料未覆盖已有真题，不能安全地重建。"""
 
-    幂等：重复运行不会翻倍。rebuild=True 时先清空所有真题行，再全量重建。
-    """
+
+def run(seed_dir: Path, rebuild: bool = False, use_cache: bool = True) -> dict:
+    """执行幂等入库；重建模式要求输入覆盖已有真题，不改变已有题目 ID。"""
     seed_dir = Path(seed_dir)
     # 确保表与唯一索引都存在（无论表是新建还是已有）
     SQLModel.metadata.create_all(engine)
     ensure_dedup_index()
-
-    if rebuild:
-        # 清掉全部真题行，准备全量重建
-        with Session(engine) as s:
-            s.exec(delete(Question).where(Question.is_real == True))
-            s.commit()
 
     total_pdfs = junk = unknown = subjective_skipped = choice_parsed = 0
     unparsed = json_loaded = choice_empty = 0
@@ -169,25 +164,29 @@ def run(seed_dir: Path, rebuild: bool = False, use_cache: bool = True) -> dict:
         json_loaded += 1
         collected.extend(_normalize_row(r) for r in rows if isinstance(r, dict))
 
-    # 3) 幂等 upsert：内存去重 + 库内已存在去重，双保险
+    # 3) 一次提交新题；重建之前先检查资料覆盖率，不删除已有题目
     inserted = skipped = 0
-    seen: set[tuple] = set()
     with Session(engine) as session:
-        existing = set()
-        for r in session.exec(
-            select(Question.subject, Question.module, Question.source, Question.content)
-        ).all():
-            existing.add((r[0], r[1], r[2], r[3]))
+        rows = session.exec(select(
+            Question.subject, Question.module, Question.source, Question.content, Question.is_real,
+        )).all()
+        seen = {tuple(row[:4]) for row in rows}
+        if rebuild:
+            incoming = {
+                (q["subject"], q["module"], q["source"], q["content"])
+                for q in collected if q["is_real"]
+            }
+            missing = sum(1 for row in rows if row[4] and tuple(row[:4]) not in incoming)
+            if missing:
+                raise IncompleteRebuildError(f"资料缺少 {missing} 道已入库真题；未修改题库。请核对资料或使用普通增量导入。")
         for q in collected:
             key = (q["subject"], q["module"], q["source"], q["content"])
-            if key in seen or key in existing:
+            if key in seen:
                 skipped += 1
                 continue
             seen.add(key)
             session.add(Question(**q))
             inserted += 1
-            if inserted % 1000 == 0:
-                session.commit()
         session.commit()
         total_db_real = session.exec(
             select(func.count()).select_from(Question).where(Question.is_real == True)
@@ -288,7 +287,7 @@ def backfill_answers(seed_dir: Path) -> dict:
 def format_report(report: dict) -> str:
     """把覆盖率报告渲染成中文文本，供命令行直接打印。"""
     lines = [
-        "===== 公考大鹏 · 真题入库报告 =====",
+        "===== 白泽公考 · 真题入库报告 =====",
         f"扫描 PDF 总数：{report['total_pdfs']}",
         f"  跳过（垃圾资料）：{report['junk']}",
         f"  未识别（unknown，可能是漏网真题）：{report['unknown']}",
@@ -303,7 +302,7 @@ def format_report(report: dict) -> str:
         f"  当前真题库总量：{report['total_db_real']}",
         f"  标准答案回填：{report.get('answers_updated', 0)} 题",
         "",
-        "提示：只要资料目录还在，就能用下面命令从零重建真题库：",
+        "提示：如下命令校验资料覆盖并补齐题库，不覆盖已有题目和答题历史：",
         "  python scripts/ingest.py --seed <资料目录> --rebuild",
         "  （等价模块入口：python -m app.ingest --seed <资料目录> --rebuild）",
     ]

@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../components/Home.vue'
+import ExamDashboard from '../components/ExamDashboard.vue'
+import StudyWorkspace from '../components/StudyWorkspace.vue'
+import StudyJobs from '../components/StudyJobs.vue'
 import Quiz from '../components/Quiz.vue'
 import Papers from '../components/Papers.vue'
 import Materials from '../components/Materials.vue'
@@ -10,7 +12,9 @@ import Materials from '../components/Materials.vue'
  * /papers（历年真题）、/materials（学习资料）。
  */
 const routes = [
-  { path: '/', name: 'home', component: Home, meta: { title: '白泽公考' } },
+  { path: '/', name: 'home', component: ExamDashboard, meta: { title: '白泽公考' } },
+  { path: '/study/:region(gz-tr|cq)', name: 'study', component: StudyWorkspace },
+  { path: '/jobs/:region(gz-tr|cq)', name: 'jobs', component: StudyJobs },
   { path: '/quiz', name: 'quiz', component: Quiz, meta: { title: '在线刷题' } },
   { path: '/papers', name: 'papers', component: Papers, meta: { title: '历年真题' } },
   { path: '/materials', name: 'materials', component: Materials, meta: { title: '学习资料' } },

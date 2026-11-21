@@ -1,6 +1,7 @@
 <script setup>
 import { Bird, Home as HomeIcon, ListChecks, BookOpen, FolderOpen } from 'lucide-vue-next'
 import { RouterLink, RouterView } from 'vue-router'
+import './study.css'
 
 // 顶部导航：图标 + 文案 + 目标路由。
 // 图标取自 Lucide 注册表：首页 Home、在线刷题 ListChecks、
@@ -37,12 +38,12 @@ const navItems = [
     </header>
 
     <main class="main">
-      <RouterView />
+      <RouterView :key="$route.path" />
     </main>
 
     <footer class="foot">
-      <span>白泽公考 · 程序员公考提效平台</span>
-      <span>FastAPI + Vue + SQLModel</span>
+      <span>白泽公考 · 铜仁与重庆个人备考</span>
+      <span>资料和作答保存在本机</span>
     </footer>
   </div>
 </template>

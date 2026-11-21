@@ -1,0 +1,37 @@
+{
+  "region": "gz-tr",
+  "kind": "fixture",
+  "source": "白泽公考自编合成验收材料，不是历年真题",
+  "id": "gz-tr-demo-practice",
+  "title": "贵州·铜仁 行测格式示例（非真题）",
+  "year": null,
+  "variant": "通用练习",
+  "questions": [
+    {
+      "number": "1",
+      "prompt": "样例题：某服务窗口上午办结 20 件，下午办结 15 件，共办结多少件？",
+      "options": {
+        "A": "35 件",
+        "B": "30 件",
+        "C": "25 件",
+        "D": "15 件"
+      },
+      "answer": "A",
+      "answer_status": "verified",
+      "explanation": "将上午、下午办结件数相加：20＋15＝35。",
+      "module": "资料分析",
+      "locator": "自编测试材料 · 第 1 题"
+    },
+    {
+      "number": "2",
+      "prompt": "样例题：下列哪项最适合作为服务指南标题？本题只用于演示缺少核对答案的情况。",
+      "options": {
+        "A": "办理说明",
+        "B": "参考信息"
+      },
+      "answer_status": "unknown",
+      "module": "言语理解与表达",
+      "locator": "自编测试材料 · 第 2 题"
+    }
+  ]
+}

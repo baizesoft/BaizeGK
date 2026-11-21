@@ -13,6 +13,7 @@ from app.routers import home
 from app.routers import quiz
 from app.routers import papers
 from app.routers import materials
+from app.routers import study
 
 
 @asynccontextmanager
@@ -45,6 +46,7 @@ app.include_router(home.router)
 app.include_router(quiz.router)
 app.include_router(papers.router)
 app.include_router(materials.router)
+app.include_router(study.router)
 
 
 @app.get("/")

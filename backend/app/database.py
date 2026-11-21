@@ -1,9 +1,11 @@
 """SQLModel 数据库引擎与会话。"""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from sqlmodel import SQLModel, Session, create_engine
+from sqlalchemy import URL
 
 from app.config import BASE_DIR, config
 
@@ -18,7 +20,10 @@ if _url.startswith("sqlite:///") and _url != "sqlite:///:memory:":
         _url = "sqlite:///" + str((BASE_DIR / _rel).resolve()).replace("\\", "/")
 
 _connect_args = {"check_same_thread": False} if _url.startswith("sqlite") else {}
-engine = create_engine(_url, echo=False, connect_args=_connect_args)
+_file_override = os.environ.get('BAIZEGK_DB_FILE')
+engine = (create_engine(URL.create('sqlite', database=str(Path(_file_override).resolve())),
+                        connect_args={'check_same_thread': False}) if _file_override
+          else create_engine(_url, echo=False, connect_args=_connect_args))
 
 
 def create_db_and_tables() -> None:

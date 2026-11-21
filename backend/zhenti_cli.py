@@ -1,4 +1,4 @@
-"""真题 JSON → GongKaoDaPeng 数据库导入 + 判分 CLI（v0 最小闭环）。
+"""真题 JSON → BaizeGK 数据库导入 + 判分 CLI（v0 最小闭环）。
 
 只导入真实真题 JSON（由真题 PDF 解析而来的产物），
      绝不生成、绝不模拟、绝不补白。
@@ -18,7 +18,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# GongKaoDaPeng 数据库路径
+# BaizeGK 数据库路径（保留旧文件名，继续读取已有题库）
 DB = Path(__file__).resolve().parent / "gongkao.db"
 # 题库 JSON 目录（真题解析产物落这里）
 QUESTIONS_DIR = Path(__file__).resolve().parent / "questions"
@@ -114,7 +114,7 @@ def cmd_practice(args) -> None:
         db.close()
         return
     sample = random.sample(rows, min(args.n, len(rows)))
-    print(f"\n===== 公考大鹏 · 刷题 {args.n} 题（{args.module or '全模块'}）=====")
+    print(f"\n===== 白泽公考 · 刷题 {args.n} 题（{args.module or '全模块'}）=====")
     print("输入答案字母（A/B/C/D），回车提交；输入 q 退出\n")
     correct = 0
     for i, row in enumerate(sample, 1):

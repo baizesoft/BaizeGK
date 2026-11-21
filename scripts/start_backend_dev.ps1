@@ -1,5 +1,5 @@
 ﻿# start_backend_dev.ps1
-# 公考大鹏后端开发服务器启动脚本
+# 白泽公考后端开发服务器启动脚本
 # 自动确保虚拟环境存在并安装依赖，随后启动 FastAPI 开发服务器（带热重载）。
 
 $ErrorActionPreference = 'Stop'

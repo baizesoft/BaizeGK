@@ -1,5 +1,5 @@
 ﻿# start_frontend_dev.ps1
-# 公考大鹏前端开发服务器启动脚本
+# 白泽公考前端开发服务器启动脚本
 # 确保 node_modules 已安装，随后启动 Vue + Vite 开发服务器。
 # 开发期 /api 已由 vite.config.js 代理到后端 8000，无需手动处理跨域。
 
